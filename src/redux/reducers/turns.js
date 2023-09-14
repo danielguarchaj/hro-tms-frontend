@@ -7,12 +7,16 @@ const { turns } = ENDPOINTS;
 
 const initialState = {
   creatingTurnStatus: fetchingResourceStatuses,
-  createdTurn: null,
   createTurnStatus: null,
+  createdTurn: null,
   turnQueue: [],
   fetchingTurnsStatus: fetchingResourceStatuses,
   snackbarFailedTurnShow: false,
   snackbarSuccessTurnShow: false,
+  updatingTurnStatus: fetchingResourceStatuses,
+  updateTurnStatus: null,
+  snackbarFailedTurnUpdateShow: false,
+  snackbarSuccessTurnUpdateShow: false,
 };
 
 export const turnsSlice = createSlice({
@@ -24,6 +28,12 @@ export const turnsSlice = createSlice({
     },
     setSnackbarSuccessTurnShow: (state, { payload }) => {
       state.snackbarSuccessTurnShow = payload;
+    },
+    setSnackbarFailedTurnUpdateShow: (state, { payload }) => {
+      state.snackbarFailedTurnUpdateShow = payload;
+    },
+    setSnackbarSuccessTurnUpdateShow: (state, { payload }) => {
+      state.snackbarSuccessTurnUpdateShow = payload;
     },
   },
   extraReducers(builder) {
@@ -66,14 +76,42 @@ export const turnsSlice = createSlice({
           state.fetchingTurnsStatus = "failed";
         }
       )
-      .addCase(getTurns.rejected, (state, { payload: { status } }) => {
+      .addCase(getTurns.rejected, (state) => {
         state.fetchingTurnsStatus = "failed";
+      })
+      .addCase(updateTurnStatus.pending, (state) => {
+        state.updatingTurnStatus = "loading";
+      })
+      .addCase(updateTurnStatus.fulfilled, (state, { payload }) => {
+        const { updatedTurn, status } = payload;
+        state.updateTurnStatus = status;
+        if (status === 200) {
+          state.updatingTurnStatus = "succeeded";
+          state.snackbarSuccessTurnUpdateShow = true;
+          const filteredTurns = state.turnQueue.filter(
+            (turn) => turn.id !== updatedTurn.id
+          );
+          filteredTurns.push(updatedTurn);
+          state.turnQueue = filteredTurns;
+          localStorage.setItem("turns", JSON.stringify(state.turnQueue));
+          return;
+        }
+        state.snackbarFailedTurnUpdateShow = true;
+        state.updatingTurnStatus = "failed";
+      })
+      .addCase(updateTurnStatus.rejected, (state) => {
+        state.snackbarFailedTurnUpdateShow = true;
+        state.updatingTurnStatus = "failed";
       });
   },
 });
 
-export const { setSnackbarFailedTurnShow, setSnackbarSuccessTurnShow } =
-  turnsSlice.actions;
+export const {
+  setSnackbarFailedTurnShow,
+  setSnackbarSuccessTurnShow,
+  setSnackbarFailedTurnUpdateShow,
+  setSnackbarSuccessTurnUpdateShow,
+} = turnsSlice.actions;
 
 export default turnsSlice.reducer;
 
@@ -111,3 +149,17 @@ export const getTurns = createAsyncThunk("turns/getTurns", async () => {
     };
   }
 });
+
+export const updateTurnStatus = createAsyncThunk(
+  "turns/updateTurnStatus",
+  async (payload) => {
+    try {
+      const response = await axios.put(turns.updateTurnStatus, payload);
+      return { updatedTurn: response.data, status: response.status };
+    } catch (error) {
+      return {
+        status: error.response.status,
+      };
+    }
+  }
+);

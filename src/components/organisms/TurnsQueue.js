@@ -18,6 +18,8 @@ import {
   getTurns,
   setSnackbarFailedTurnShow,
   setSnackbarSuccessTurnShow,
+  setSnackbarFailedTurnUpdateShow,
+  setSnackbarSuccessTurnUpdateShow,
 } from "@redux/reducers/turns";
 import { getAreas } from "@redux/reducers/auth";
 import { APP_URLS } from "@routes";
@@ -57,6 +59,9 @@ const TurnsQueue = () => {
     snackbarFailedTurnShow,
     snackbarSuccessTurnShow,
     creatingTurnStatus,
+    snackbarFailedTurnUpdateShow,
+    snackbarSuccessTurnUpdateShow,
+    updateTurnStatus,
   } = useSelector((state) => state.turns);
 
   const handleCloseSnackbarSuccess = () =>
@@ -65,7 +70,14 @@ const TurnsQueue = () => {
   const handleCloseSnackbarError = () =>
     dispatch(setSnackbarFailedTurnShow(false));
 
-  if (turnQueue.length === 0 && fetchingTurnsStatus !== "loading") {
+  const handleCloseSnackbarUpdateTurnSuccess = () => {
+    dispatch(setSnackbarSuccessTurnUpdateShow(false));
+  };
+
+  const handleCloseSnackbarUpdateTurnError = () =>
+    dispatch(setSnackbarFailedTurnUpdateShow(false));
+
+  if (turnQueue.length === 0 && fetchingTurnsStatus === "succeeded") {
     return (
       <Alert
         severity="warning"
@@ -158,6 +170,36 @@ const TurnsQueue = () => {
               variant="filled"
             >
               Error al crear el turno, intente de nuevo
+            </Alert>
+          </Snackbar>
+          <Snackbar
+            open={snackbarSuccessTurnUpdateShow}
+            autoHideDuration={4000}
+            onClose={handleCloseSnackbarUpdateTurnSuccess}
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          >
+            <Alert
+              onClose={handleCloseSnackbarUpdateTurnSuccess}
+              severity="success"
+              sx={{ width: "100%" }}
+              variant="filled"
+            >
+              Turno actualizado correctamente
+            </Alert>
+          </Snackbar>
+          <Snackbar
+            open={snackbarFailedTurnUpdateShow}
+            autoHideDuration={4000}
+            onClose={handleCloseSnackbarUpdateTurnError}
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          >
+            <Alert
+              onClose={handleCloseSnackbarUpdateTurnError}
+              severity="error"
+              sx={{ width: "100%" }}
+              variant="filled"
+            >
+              No se pudo actualizar el turno, intente de nuevo
             </Alert>
           </Snackbar>
           <Box

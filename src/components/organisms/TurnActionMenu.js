@@ -1,17 +1,30 @@
 import * as React from "react";
 import { Divider, Tooltip, Menu, MenuItem, ListItemIcon } from "@mui/material";
 import { HowToReg, CallMissedOutgoing, PersonOff } from "@mui/icons-material";
+import { updateTurnStatus } from "@redux/reducers/turns";
+import { useDispatch } from "react-redux";
 import Speech from "@molecules/Speech";
 import { StyledTableCell, StyledTableRow } from "@utils/styles";
+import { TURN_STATUS } from "@utils/constants";
 
 export default function TurnActionMenu({ turn, index }) {
+  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+  const handleClose = (_e, newStatus) => {
     setAnchorEl(null);
+    if (
+      [
+        TURN_STATUS.attended,
+        TURN_STATUS.absent,
+        TURN_STATUS.cancelled,
+      ].includes(newStatus)
+    ) {
+      dispatch(updateTurnStatus({ id: turn._id, newStatus }));
+    }
   };
   return (
     <React.Fragment>
@@ -64,19 +77,19 @@ export default function TurnActionMenu({ turn, index }) {
       >
         <Speech text={`Turno del paciente ${turn.nombres} ${turn.apellidos}`} />
         <Divider />
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.attended)}>
           <ListItemIcon>
             <HowToReg />
           </ListItemIcon>
           Atendido
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.absent)}>
           <ListItemIcon>
             <CallMissedOutgoing />
           </ListItemIcon>
           Ausente
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.cancelled)}>
           <ListItemIcon>
             <PersonOff />
           </ListItemIcon>
