@@ -1,23 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import PrivateLayout from "@templates/PrivateLayout";
+import LoginPage from "@pages/Login";
+import QueuePublic from "@pages/QueuePublic";
+import QueueAdmin from "@pages/Admin";
+
+import { APP_URLS } from "@routes";
+
+import "./App.css";
+
+const routesConfig = [
+  {
+    path: APP_URLS.login,
+    element: <LoginPage />,
+  },
+  {
+    path: APP_URLS.queue,
+    element: <QueuePublic />,
+  },
+  {
+    element: <PrivateLayout />,
+    children: [
+      {
+        path: APP_URLS.admin,
+        element: <QueueAdmin />,
+      },
+    ],
+  },
+];
+
+const router = createBrowserRouter(routesConfig);
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <RouterProvider router={router} />
     </div>
   );
 }
