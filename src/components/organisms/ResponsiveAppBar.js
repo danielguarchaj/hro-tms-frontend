@@ -9,11 +9,14 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
+import ImageListItem from "@mui/material/ImageListItem";
 
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@redux/reducers/auth";
 import { setIndex } from "@redux/reducers/admin";
 import { Tab, Tabs } from "@mui/material";
+
+import Logo from "../../assets/images/logo HRO sin fondo..png";
 
 const pages = ["Turnos", "Citas", "Reportes"];
 
@@ -45,6 +48,10 @@ function ResponsiveAppBar() {
   const username = user?.username;
   const area = user?.area?.name;
 
+  const headerText = `${area || ""} | ${user?.first_name || ""} ${
+    user?.last_name || ""
+  }`;
+
   const settings = [`${username} | Cerrar sesión`];
 
   const handleChange = (_event, newValue) => {
@@ -53,7 +60,7 @@ function ResponsiveAppBar() {
 
   return (
     <AppBar position="static" color="transparent">
-      <Container maxWidth="xl">
+      <Container maxWidth="xxl">
         <Toolbar
           disableGutters
           sx={{ display: "flex", justifyContent: "space-between" }}
@@ -72,15 +79,28 @@ function ResponsiveAppBar() {
               />
             ))}
           </Tabs>
-          <Typography textAlign="center" variant="h5">
-            Area: {area}
-          </Typography>
+          <ImageListItem sx={{ height: "75px !important" }}>
+            <img src={Logo} alt={"Logo"} loading="lazy" />
+          </ImageListItem>
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Abrir">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt={username} src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
+            <Box
+              sx={{
+                display: "flex",
+                "& .MuiTypography-overline": {
+                  marginRight: "0.5rem",
+                  marginTop: "0.25rem",
+                },
+              }}
+            >
+              <Typography textAlign="center" variant="overline">
+                {headerText}
+              </Typography>
+              <Tooltip title="Abrir">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt={username} src="/static/images/avatar/2.jpg" />
+                </IconButton>
+              </Tooltip>
+            </Box>
             <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"
