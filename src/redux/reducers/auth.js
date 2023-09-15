@@ -96,7 +96,7 @@ export const getAreas = createAsyncThunk("auth/getAreas", async () => {
     return { areas: data, status };
   } catch (error) {
     return {
-      status: error.response.status,
+      status: error?.response?.status || 500,
     };
   }
 });

@@ -19,7 +19,7 @@ import { onlyDigits } from "../../utils/helpers";
 
 const SearchPatientForm = () => {
   const dispatch = useDispatch();
-  const [radioValue, setRadioValue] = useState("names");
+  const [radioValue, setRadioValue] = useState("clinicalHistory");
 
   const {
     searchForm: {

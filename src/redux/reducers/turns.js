@@ -145,7 +145,7 @@ export const getTurns = createAsyncThunk("turns/getTurns", async () => {
     return { turnQueue: response.data, status: response.status };
   } catch (error) {
     return {
-      status: error.response.status,
+      status: error?.response?.status || 500,
     };
   }
 });

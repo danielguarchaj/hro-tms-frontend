@@ -1,6 +1,11 @@
 import * as React from "react";
 import { Divider, Tooltip, Menu, MenuItem, ListItemIcon } from "@mui/material";
-import { HowToReg, CallMissedOutgoing, PersonOff } from "@mui/icons-material";
+import {
+  People,
+  HowToReg,
+  CallMissedOutgoing,
+  PersonOff,
+} from "@mui/icons-material";
 import { updateTurnStatus } from "@redux/reducers/turns";
 import { useDispatch } from "react-redux";
 import Speech from "@molecules/Speech";
@@ -18,6 +23,7 @@ export default function TurnActionMenu({ turn, index }) {
     setAnchorEl(null);
     if (
       [
+        TURN_STATUS.onQueue,
         TURN_STATUS.attended,
         TURN_STATUS.absent,
         TURN_STATUS.cancelled,
@@ -77,24 +83,38 @@ export default function TurnActionMenu({ turn, index }) {
       >
         <Speech text={`Turno del paciente ${turn.nombres} ${turn.apellidos}`} />
         <Divider />
-        <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.attended)}>
-          <ListItemIcon>
-            <HowToReg />
-          </ListItemIcon>
-          Atendido
-        </MenuItem>
-        <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.absent)}>
-          <ListItemIcon>
-            <CallMissedOutgoing />
-          </ListItemIcon>
-          Ausente
-        </MenuItem>
-        <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.cancelled)}>
-          <ListItemIcon>
-            <PersonOff />
-          </ListItemIcon>
-          Anular
-        </MenuItem>
+        {turn.status !== TURN_STATUS.onQueue && (
+          <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.onQueue)}>
+            <ListItemIcon>
+              <People />
+            </ListItemIcon>
+            En Cola
+          </MenuItem>
+        )}
+        {turn.status !== TURN_STATUS.attended && (
+          <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.attended)}>
+            <ListItemIcon>
+              <HowToReg />
+            </ListItemIcon>
+            Atendido
+          </MenuItem>
+        )}
+        {turn.status !== TURN_STATUS.absent && (
+          <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.absent)}>
+            <ListItemIcon>
+              <CallMissedOutgoing />
+            </ListItemIcon>
+            Ausente
+          </MenuItem>
+        )}
+        {turn.status !== TURN_STATUS.cancelled && (
+          <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.cancelled)}>
+            <ListItemIcon>
+              <PersonOff />
+            </ListItemIcon>
+            Anular
+          </MenuItem>
+        )}
       </Menu>
     </React.Fragment>
   );

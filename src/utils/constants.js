@@ -8,3 +8,9 @@ export const TURN_STATUS = {
   absent: "AUSENTE",
   cancelled: "ANULADO",
 };
+export const TURN_LABEL_MAP = {
+  0: "EN COLA",
+  1: "ATENDIDO",
+  2: "AUSENTE",
+  3: "ANULADO",
+};

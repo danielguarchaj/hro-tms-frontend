@@ -23,10 +23,12 @@ import {
 } from "@redux/reducers/turns";
 import { getAreas } from "@redux/reducers/auth";
 import { APP_URLS } from "@routes";
+import { TURN_STATUS } from "@utils/constants";
 
-import { StyledTableCell } from "@utils/styles";
+import { StyledTableCell, StyledTableRow } from "@utils/styles";
 
 import TurnActionMenu from "./TurnActionMenu";
+import TurnsBottomNavigation from "./TurnsBottomNavigation";
 
 const buildTableHeader = () => {
   const columns = [
@@ -61,8 +63,9 @@ const TurnsQueue = () => {
     creatingTurnStatus,
     snackbarFailedTurnUpdateShow,
     snackbarSuccessTurnUpdateShow,
-    updateTurnStatus,
   } = useSelector((state) => state.turns);
+
+  const { filterParameter } = useSelector((state) => state.admin);
 
   const handleCloseSnackbarSuccess = () =>
     dispatch(setSnackbarSuccessTurnShow(false));
@@ -81,7 +84,12 @@ const TurnsQueue = () => {
     return (
       <Alert
         severity="warning"
-        sx={{ margin: "0 auto", width: "30rem", marginTop: "3rem" }}
+        sx={{
+          margin: "0 auto",
+          width: "30rem",
+          marginTop: "3rem",
+          justifyContent: "center",
+        }}
       >
         No se han generado turnos para el dia de hoy
       </Alert>
@@ -119,7 +127,19 @@ const TurnsQueue = () => {
   }
 
   const buildTableContent = () => {
-    return turnQueue.map((turn, index) => (
+    const arrayToRender = TURNS_MAP[filterParameter];
+    if (arrayToRender.length === 0) {
+      return (
+        <StyledTableRow key="No-data-in-table-key">
+          <StyledTableCell>
+            <Alert sx={{ width: "100%" }} severity="info">
+              No hay turnos en estado {filterParameter}
+            </Alert>
+          </StyledTableCell>
+        </StyledTableRow>
+      );
+    }
+    return arrayToRender.map((turn, index) => (
       <TurnActionMenu
         turn={turn}
         index={index}
@@ -128,8 +148,30 @@ const TurnsQueue = () => {
     ));
   };
 
+  const patientsOnQueue = turnQueue.filter(
+    (turn) => turn.status === TURN_STATUS.onQueue
+  );
+
+  const patientsAttended = turnQueue.filter(
+    (turn) => turn.status === TURN_STATUS.attended
+  );
+
+  const patientsAbsent = turnQueue.filter(
+    (turn) => turn.status === TURN_STATUS.absent
+  );
+
+  const patientsCancelled = turnQueue.filter(
+    (turn) => turn.status === TURN_STATUS.cancelled
+  );
+
+  const TURNS_MAP = {};
+  TURNS_MAP[TURN_STATUS.onQueue] = patientsOnQueue;
+  TURNS_MAP[TURN_STATUS.attended] = patientsAttended;
+  TURNS_MAP[TURN_STATUS.absent] = patientsAbsent;
+  TURNS_MAP[TURN_STATUS.cancelled] = patientsCancelled;
+
   return (
-    <Card variant="outlined">
+    <Card variant="outlined" sx={{ marginTop: 0.3 }}>
       <CardContent sx={{ padding: "0!important" }}>
         <Box
           sx={{
@@ -205,15 +247,12 @@ const TurnsQueue = () => {
           <Box
             sx={{
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent: "flex-end",
               padding: "1rem",
               paddingBottom: "0",
               paddingTop: "0.25rem",
             }}
           >
-            <Typography variant="subtitle2">
-              Pacientes en cola: {turnQueue.length}
-            </Typography>
             <Typography variant="subtitle2">
               <Link
                 href={APP_URLS.queue}
@@ -225,6 +264,12 @@ const TurnsQueue = () => {
               </Link>
             </Typography>
           </Box>
+          <TurnsBottomNavigation
+            onQueueCount={patientsOnQueue.length}
+            attendedCount={patientsAttended.length}
+            absentCount={patientsAbsent.length}
+            cancelledCount={patientsCancelled.length}
+          />
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
               <TableHead>
