@@ -52,7 +52,7 @@ function ResponsiveAppBar() {
     user?.last_name || ""
   }`;
 
-  const settings = [`${username} | Cerrar sesión`];
+  const settings = [`${username || ""} | Cerrar sesión`];
 
   const handleChange = (_event, newValue) => {
     dispatch(setIndex({ index: newValue }));

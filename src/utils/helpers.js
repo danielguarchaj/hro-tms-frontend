@@ -31,3 +31,18 @@ export const onlyDigits = (value) => {
 };
 
 export const decodeJwt = (token) => jwt_decode(token);
+
+export const sortByProperty = (array, property) => {
+  const compare = (a, b) => {
+    const propertyValueA = a[property];
+    const propertyValueB = b[property];
+    if (propertyValueA < propertyValueB) {
+      return -1;
+    } else if (propertyValueA > propertyValueB) {
+      return 1;
+    } else {
+      return 0;
+    }
+  };
+  return array.sort(compare);
+};

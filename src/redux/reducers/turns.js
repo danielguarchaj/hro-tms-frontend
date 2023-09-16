@@ -2,6 +2,7 @@ import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchingResourceStatuses } from "@utils/constants";
 import { ENDPOINTS } from "@routes";
+import { sortByProperty } from "../../utils/helpers";
 
 const { turns } = ENDPOINTS;
 
@@ -69,8 +70,9 @@ export const turnsSlice = createSlice({
         (state, { payload: { turnQueue, status } }) => {
           if (status === 200) {
             state.fetchingTurnsStatus = "succeeded";
-            state.turnQueue = turnQueue;
-            localStorage.setItem("turns", JSON.stringify(state.turnQueue));
+            const sortedTurns = sortByProperty(turnQueue, "numero");
+            state.turnQueue = sortedTurns;
+            localStorage.setItem("turns", JSON.stringify(state.sortedTurns));
             return;
           }
           state.fetchingTurnsStatus = "failed";

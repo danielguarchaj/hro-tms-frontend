@@ -32,7 +32,7 @@ import TurnsBottomNavigation from "./TurnsBottomNavigation";
 
 const buildTableHeader = () => {
   const columns = [
-    "Orden",
+    "# Turno",
     "Historia Clinica",
     "Nombre completo",
     "Genero",

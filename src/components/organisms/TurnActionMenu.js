@@ -50,7 +50,7 @@ export default function TurnActionMenu({ turn, index }) {
             scope="row"
             sx={{ fontSize: "1.5rem !important" }}
           >
-            {index + 1}
+            {turn.numero}
           </StyledTableCell>
           <StyledTableCell onClick={handleClick} component="th" scope="row">
             {turn.noHistoriaClinica}
@@ -81,7 +81,9 @@ export default function TurnActionMenu({ turn, index }) {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "center", vertical: "center" }}
       >
-        <Speech text={`Turno del paciente ${turn.nombres} ${turn.apellidos}`} />
+        <Speech
+          text={`Turno ${turn.numero}, ${turn.nombres} ${turn.apellidos}`}
+        />
         <Divider />
         {turn.status !== TURN_STATUS.onQueue && (
           <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.onQueue)}>
