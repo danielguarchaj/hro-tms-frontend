@@ -1,21 +1,43 @@
+import * as React from "react";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { APP_URLS } from "@routes";
-import { updateInput, getAccessToken } from "@redux/reducers/auth";
+import {
+  updateInput,
+  getAccessToken,
+  setShowErrorSnackbar,
+} from "@redux/reducers/auth";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {
+  Alert,
+  Snackbar,
+  Avatar,
+  Button,
+  CssBaseline,
+  TextField,
+  Paper,
+  Box,
+  Grid,
+  Typography,
+} from "@mui/material";
+import ImageSide from "../../../assets/images/MSPASHRO.jpeg";
 
-import TextField from "@mui/material/TextField";
-import Button from "@atoms/Button";
-import { Typography } from "@mui/material";
+const defaultTheme = createTheme();
 
-import "./index.css";
-
-const LoginForm = () => {
+export default function SignInSide() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { username, password, token, tokenStatus, sessionExpired } =
-    useSelector((state) => state.auth);
+  const {
+    username,
+    password,
+    token,
+    tokenStatus,
+    sessionExpired,
+    showErrorSnackbar,
+  } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (token && tokenStatus === "succeeded" && !sessionExpired) {
@@ -27,7 +49,7 @@ const LoginForm = () => {
     // }
   }, [token, tokenStatus, sessionExpired, navigate]);
 
-  const disableSubmit = false;
+  const disableSubmit = tokenStatus === "loading";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -38,51 +60,101 @@ const LoginForm = () => {
     dispatch(updateInput({ field, value }));
   };
 
-  return (
-    <div className="login-container">
-      <form
-        className="login-form"
-        noValidate="novalidate"
-        onSubmit={(e) => handleSubmit(e)}
-        disabled={disableSubmit}
-      >
-        <Typography variant="h4">
-          Bienvenido al sistema de gestion de turnos
-        </Typography>
-        <TextField
-          label="Usuario"
-          value={username}
-          onChange={(e) => handleChange("username", e.target.value)}
-          variant="outlined"
-          fullWidth
-          className="login-form__custom-button"
-          margin="dense"
-          type="text"
-          disabled={disableSubmit}
-        />
-        <TextField
-          label="Usuario"
-          value={password}
-          onChange={(e) => handleChange("password", e.target.value)}
-          variant="outlined"
-          fullWidth
-          className="login-form__custom-button"
-          margin="dense"
-          type="password"
-          disabled={disableSubmit}
-        />
-        <Button
-          type="button"
-          color="primary"
-          customClassName="login-form__custom-button"
-          label="Iniciar Sesion"
-          size="large"
-          onClick={() => dispatch(getAccessToken({ username, password }))}
-          disabled={disableSubmit}
-        />
-      </form>
-    </div>
-  );
-};
+  const handleCloseSnackbar = () => {
+    dispatch(setShowErrorSnackbar(false));
+  };
 
-export default LoginForm;
+  return (
+    <ThemeProvider theme={defaultTheme}>
+      <Grid container component="main" sx={{ height: "100vh" }}>
+        <CssBaseline />
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={7}
+          sx={{
+            backgroundImage: `url(${ImageSide})`,
+            backgroundRepeat: "no-repeat",
+            backgroundColor: (t) =>
+              t.palette.mode === "light"
+                ? t.palette.grey[50]
+                : t.palette.grey[900],
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          <Box
+            sx={{
+              my: 8,
+              mx: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h4">
+              SISTEMA DE GESTIÓN DE TURNOS
+            </Typography>
+            <form onSubmit={handleSubmit}>
+              <Box sx={{ mt: 1 }}>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="username"
+                  label="Usuario"
+                  name="username"
+                  autoFocus
+                  value={username}
+                  onChange={(e) => handleChange("username", e.target.value)}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Contraseña"
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => handleChange("password", e.target.value)}
+                  disabled={disableSubmit}
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                  size="large"
+                  disabled={disableSubmit}
+                >
+                  Iniciar Sesion
+                </Button>
+              </Box>
+            </form>
+            <Snackbar
+              open={showErrorSnackbar}
+              autoHideDuration={5000}
+              onClose={handleCloseSnackbar}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            >
+              <Alert
+                onClose={handleCloseSnackbar}
+                severity="error"
+                sx={{ width: "100%" }}
+                variant="filled"
+              >
+                Credenciales invalidas, intente de nuevo
+              </Alert>
+            </Snackbar>
+          </Box>
+        </Grid>
+      </Grid>
+    </ThemeProvider>
+  );
+}

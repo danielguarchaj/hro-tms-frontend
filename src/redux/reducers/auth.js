@@ -15,6 +15,7 @@ const initialState = {
   areas: [],
   fetchingAreasStatus: fetchingResourceStatuses,
   user: null,
+  showErrorSnackbar: false,
 };
 
 export const authSlice = createSlice({
@@ -28,6 +29,9 @@ export const authSlice = createSlice({
       ...state,
       ...initialState,
     }),
+    setShowErrorSnackbar: (state, { payload }) => {
+      state.showErrorSnackbar = payload;
+    },
   },
   extraReducers(builder) {
     builder
@@ -38,7 +42,7 @@ export const authSlice = createSlice({
       .addCase(
         getAccessToken.fulfilled,
         (state, { payload: { token, status } }) => {
-          if (status === 200) {
+          if (status === 200 && token) {
             state.tokenStatus = "succeeded";
             state.token = token;
             state.sessionExpired = false;
@@ -51,11 +55,13 @@ export const authSlice = createSlice({
           }
           state.tokenStatus = "failed";
           state.token = "";
+          state.showErrorSnackbar = true;
         }
       )
       .addCase(getAccessToken.rejected, (state) => {
         state.tokenStatus = "failed";
         state.token = "";
+        state.showErrorSnackbar = true;
       })
       .addCase(getAreas.pending, (state) => {
         state.fetchingAreasStatus = "loading";
@@ -76,17 +82,21 @@ export const authSlice = createSlice({
   },
 });
 
-export const { updateInput, logout } = authSlice.actions;
+export const { updateInput, logout, setShowErrorSnackbar } = authSlice.actions;
 export default authSlice.reducer;
 
 export const getAccessToken = createAsyncThunk(
   "auth/getAccessToken",
   async (payload) => {
-    const {
-      data: { token },
-      status,
-    } = await axios.post(auth.getAuthenticationToken, payload);
-    return { token, status };
+    try {
+      const {
+        data: { token, status: statusFromData },
+        status: statusFromResponse,
+      } = await axios.post(auth.getAuthenticationToken, payload);
+      return { token, status: statusFromData || statusFromResponse || 400 };
+    } catch (error) {
+      return { error: error, status: error.status || 500 };
+    }
   }
 );
 
