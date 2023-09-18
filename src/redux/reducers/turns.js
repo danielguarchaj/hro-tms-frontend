@@ -68,11 +68,14 @@ export const turnsSlice = createSlice({
       .addCase(
         getTurns.fulfilled,
         (state, { payload: { turnQueue, status } }) => {
-          if (status === 200) {
+          if (
+            (status === 200 && turnQueue?.length !== undefined) ||
+            turnQueue?.length >= 0
+          ) {
             state.fetchingTurnsStatus = "succeeded";
             const sortedTurns = sortByProperty(turnQueue, "numero");
             state.turnQueue = sortedTurns;
-            localStorage.setItem("turns", JSON.stringify(state.sortedTurns));
+            localStorage.setItem("turns", JSON.stringify(state.turnQueue));
             return;
           }
           state.fetchingTurnsStatus = "failed";
@@ -91,10 +94,11 @@ export const turnsSlice = createSlice({
           state.updatingTurnStatus = "succeeded";
           state.snackbarSuccessTurnUpdateShow = true;
           const filteredTurns = state.turnQueue.filter(
-            (turn) => turn.id !== updatedTurn.id
+            (turn) => turn._id !== updatedTurn._id
           );
           filteredTurns.push(updatedTurn);
-          state.turnQueue = filteredTurns;
+          const sortedTurns = sortByProperty(filteredTurns, "numero");
+          state.turnQueue = sortedTurns;
           localStorage.setItem("turns", JSON.stringify(state.turnQueue));
           return;
         }
