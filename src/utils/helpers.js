@@ -32,10 +32,16 @@ export const onlyDigits = (value) => {
 
 export const decodeJwt = (token) => jwt_decode(token);
 
-export const sortByProperty = (array, property) => {
+export const sortByProperty = (array, property, order = "asc") => {
   const compare = (a, b) => {
-    const propertyValueA = a[property];
-    const propertyValueB = b[property];
+    let propertyValueA = a[property];
+    let propertyValueB = b[property];
+
+    if (order === "desc") {
+      propertyValueA = b[property];
+      propertyValueB = a[property];
+    }
+
     if (propertyValueA < propertyValueB) {
       return -1;
     } else if (propertyValueA > propertyValueB) {
@@ -45,4 +51,38 @@ export const sortByProperty = (array, property) => {
     }
   };
   return array.sort(compare);
+};
+
+export const calculateAverageWaitingTime = (patientTurns) => {
+  if (!patientTurns || patientTurns.length === 0) {
+    return 0;
+  }
+
+  let totalWaitingTime = 0;
+  let numberOfPatients = 0;
+
+  for (const patient of patientTurns) {
+    const timestamp = new Date(patient.timestamp).getTime();
+    const updatedAt = new Date(patient.updatedAt).getTime();
+
+    if (!isNaN(timestamp) && !isNaN(updatedAt)) {
+      const waitingTime = updatedAt - timestamp;
+      totalWaitingTime += waitingTime;
+      numberOfPatients++;
+    }
+  }
+
+  if (numberOfPatients === 0) {
+    return 0;
+  }
+
+  // Calculate the average waiting time in minutes
+  const averageWaitingTimeInMilliseconds = totalWaitingTime / numberOfPatients;
+  const averageWaitingTimeInMinutes =
+    averageWaitingTimeInMilliseconds / (1000 * 60);
+  return averageWaitingTimeInMinutes.toFixed();
+
+  // Calculate the average waiting time in miliseconds
+  // const averageWaitingTime = totalWaitingTime / numberOfPatients;
+  // return averageWaitingTime;
 };

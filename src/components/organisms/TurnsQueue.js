@@ -24,6 +24,7 @@ import {
 import { getAreas } from "@redux/reducers/auth";
 import { APP_URLS } from "@routes";
 import { TURN_STATUS } from "@utils/constants";
+import { sortByProperty as sortArray } from "@utils/helpers";
 
 import { StyledTableCell, StyledTableRow } from "@utils/styles";
 
@@ -152,16 +153,22 @@ const TurnsQueue = () => {
     (turn) => turn.status === TURN_STATUS.onQueue
   );
 
-  const patientsAttended = turnQueue.filter(
-    (turn) => turn.status === TURN_STATUS.attended
+  const patientsAttended = sortArray(
+    turnQueue.filter((turn) => turn.status === TURN_STATUS.attended),
+    "updatedAt",
+    "desc"
   );
 
-  const patientsAbsent = turnQueue.filter(
-    (turn) => turn.status === TURN_STATUS.absent
+  const patientsAbsent = sortArray(
+    turnQueue.filter((turn) => turn.status === TURN_STATUS.absent),
+    "updatedAt",
+    "desc"
   );
 
-  const patientsCancelled = turnQueue.filter(
-    (turn) => turn.status === TURN_STATUS.cancelled
+  const patientsCancelled = sortArray(
+    turnQueue.filter((turn) => turn.status === TURN_STATUS.cancelled),
+    "updatedAt",
+    "desc"
   );
 
   const TURNS_MAP = {};

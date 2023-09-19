@@ -16,7 +16,10 @@ import {
   MAX_TURNS_TO_SHOW_PUBLIC,
 } from "@utils/constants";
 
-import { sortByProperty as sortArray } from "../../../utils/helpers";
+import {
+  sortByProperty as sortArray,
+  calculateAverageWaitingTime,
+} from "@utils/helpers";
 
 import LogoSinFondo from "@images/logo HRO sin fondo..png";
 import LogoMSPAS from "@images/LOGO MSPAS.jpeg";
@@ -41,13 +44,16 @@ const QueuePublic = () => {
 
   const notOnQueueTurns = sortArray(
     turns.filter((turn) => turn.status !== TURN_STATUS.onQueue),
-    "numero"
+    "updatedAt",
+    "desc"
   );
 
   const notOnQueueTurnsLimited =
     notOnQueueTurns.length > MAX_TURNS_TO_SHOW_PUBLIC
       ? notOnQueueTurns.slice(0, MAX_TURNS_TO_SHOW_PUBLIC)
       : notOnQueueTurns;
+    
+  const avgWaitingTime = calculateAverageWaitingTime(notOnQueueTurns);
 
   // Define a function to handle changes in localStorage
   const handleLocalStorageChange = (e) => {
@@ -174,7 +180,7 @@ const QueuePublic = () => {
               <strong>Tiempo de espera promedio</strong>
             </Typography>
             <Typography variant="h2">
-              <strong>18 minutos</strong>
+              <strong>{avgWaitingTime} minutos</strong>
             </Typography>
           </Grid>
         </Grid>
