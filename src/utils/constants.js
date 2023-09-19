@@ -14,3 +14,9 @@ export const TURN_LABEL_MAP = {
   2: "AUSENTE",
   3: "ANULADO",
 };
+export const BADGE_TURN_COLORS_MAP = {
+  ATENDIDO: "success",
+  AUSENTE: "warning",
+  ANULADO: "error",
+};
+export const MAX_TURNS_TO_SHOW_PUBLIC = 10;
