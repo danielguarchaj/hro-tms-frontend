@@ -19,6 +19,7 @@ import {
 import {
   sortByProperty as sortArray,
   calculateAverageWaitingTime,
+  getEstimatedTimeToBeAttended,
 } from "@utils/helpers";
 
 import LogoSinFondo from "@images/logo HRO sin fondo..png";
@@ -52,7 +53,7 @@ const QueuePublic = () => {
     notOnQueueTurns.length > MAX_TURNS_TO_SHOW_PUBLIC
       ? notOnQueueTurns.slice(0, MAX_TURNS_TO_SHOW_PUBLIC)
       : notOnQueueTurns;
-    
+
   const avgWaitingTime = calculateAverageWaitingTime(notOnQueueTurns);
 
   // Define a function to handle changes in localStorage
@@ -97,7 +98,7 @@ const QueuePublic = () => {
               <Typography noWrap variant="h4">
                 <strong>Proximos turnos</strong>
               </Typography>
-              {onQueueTurnsLimited.map((turn) => (
+              {onQueueTurnsLimited.map((turn, index) => (
                 <Paper
                   sx={{
                     my: 1,
@@ -107,10 +108,23 @@ const QueuePublic = () => {
                   key={turn._id}
                 >
                   <Stack spacing={2} direction="row" alignItems="center">
-                    <Stack sx={{ minWidth: 0 }}>
+                    <Stack
+                      sx={{
+                        minWidth: 0,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        flexDirection: "row",
+                      }}
+                    >
                       <Typography noWrap variant="h4">
                         <strong>{turn.numero}</strong> - {turn.nombres || ""}{" "}
                         {turn.apellidos || ""}
+                      </Typography>
+                      <Typography sx={{ marginLeft: "3rem" }} variant="h4">
+                        {getEstimatedTimeToBeAttended(
+                          index + 1,
+                          avgWaitingTime
+                        )}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -177,10 +191,12 @@ const QueuePublic = () => {
           </Grid>
           <Grid item xs={6} textAlign={"right"}>
             <Typography variant="h2">
-              <strong>Tiempo de espera promedio</strong>
+              <strong>Tiempo de espera promedio por turno</strong>
             </Typography>
             <Typography variant="h2">
-              <strong>{avgWaitingTime} minutos</strong>
+              <strong>
+                {(Number(avgWaitingTime) / (1000 * 60)).toFixed()} minutos
+              </strong>
             </Typography>
           </Grid>
         </Grid>

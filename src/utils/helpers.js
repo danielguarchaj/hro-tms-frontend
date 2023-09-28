@@ -76,13 +76,15 @@ export const calculateAverageWaitingTime = (patientTurns) => {
     return 0;
   }
 
-  // Calculate the average waiting time in minutes
-  const averageWaitingTimeInMilliseconds = totalWaitingTime / numberOfPatients;
-  const averageWaitingTimeInMinutes =
-    averageWaitingTimeInMilliseconds / (1000 * 60);
-  return averageWaitingTimeInMinutes.toFixed();
-
   // Calculate the average waiting time in miliseconds
-  // const averageWaitingTime = totalWaitingTime / numberOfPatients;
-  // return averageWaitingTime;
+  const averageWaitingTime = totalWaitingTime / numberOfPatients;
+  return averageWaitingTime;
 };
+
+export const getEstimatedTimeToBeAttended = (order, averageWaitingTime) => {
+  const nowTime = new Date().getTime();
+  const timeToAdd = Number(averageWaitingTime) * order;
+  const estimatedDateTime = new Date(nowTime + timeToAdd);
+  console.log(`${estimatedDateTime.getHours()}:${estimatedDateTime.getMinutes()}`)
+  return `${estimatedDateTime.getHours()}:${estimatedDateTime.getMinutes()}`
+}
