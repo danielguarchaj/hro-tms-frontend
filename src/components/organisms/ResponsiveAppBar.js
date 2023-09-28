@@ -45,14 +45,14 @@ function ResponsiveAppBar() {
     dispatch(logout());
   };
 
-  const username = user?.username;
-  const area = user?.area?.name;
+  const username = user?.username || "";
+  const area = user?.area?.name || "";
 
   const headerText = `${area || ""} | ${user?.first_name || ""} ${
     user?.last_name || ""
   }`;
 
-  const settings = [`${username || ""} | Cerrar sesión`];
+  const settings = [`${username} | Cerrar sesión`];
 
   const handleChange = (_event, newValue) => {
     dispatch(setIndex({ index: newValue }));

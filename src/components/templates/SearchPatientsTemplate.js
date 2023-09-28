@@ -15,7 +15,7 @@ const SearchPatientsTemplate = () => {
   const { searchPatientDialogOpen } = useSelector((state) => state.patients);
   const { user } = useSelector((state) => state.auth);
 
-  const area = user?.area.name;
+  const area = user?.area?.name || "";
 
   const dialogContent = (
     <>
