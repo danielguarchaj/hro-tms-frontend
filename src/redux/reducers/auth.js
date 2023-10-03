@@ -12,8 +12,6 @@ const initialState = {
   sessionExpired: false,
   username: "",
   password: "",
-  areas: [],
-  fetchingAreasStatus: fetchingResourceStatuses,
   user: null,
   showErrorSnackbar: false,
 };
@@ -63,22 +61,6 @@ export const authSlice = createSlice({
         state.token = "";
         state.showErrorSnackbar = true;
       })
-      .addCase(getAreas.pending, (state) => {
-        state.fetchingAreasStatus = "loading";
-      })
-      .addCase(getAreas.fulfilled, (state, { payload: { areas, status } }) => {
-        state.searchResultStatus = status;
-        if (status === 200) {
-          state.fetchingAreasStatus = "succeeded";
-          state.areas = areas.data;
-          return;
-        }
-        state.fetchingAreasStatus = "failed";
-      })
-      .addCase(getAreas.rejected, (state, { payload: { status } }) => {
-        state.fetchingAreasStatus = "failed";
-        state.searchResultStatus = status;
-      });
   },
 });
 
@@ -99,14 +81,3 @@ export const getAccessToken = createAsyncThunk(
     }
   }
 );
-
-export const getAreas = createAsyncThunk("auth/getAreas", async () => {
-  try {
-    const { data, status } = await axios.get(auth.getAreas);
-    return { areas: data, status };
-  } catch (error) {
-    return {
-      status: error?.response?.status || 500,
-    };
-  }
-});

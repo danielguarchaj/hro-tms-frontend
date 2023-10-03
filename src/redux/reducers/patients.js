@@ -71,11 +71,16 @@ export default patientsSlice.reducer;
 
 export const getPatients = createAsyncThunk(
   "patients/getPatients",
-  async (payload) => {
+  async ({ payload, token }) => {
     try {
       const { data, status } = await axios.post(
         patients.searchPatient,
-        payload
+        payload,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
       );
       return { patients: data, status, searchBy: payload.searchBy };
     } catch (error) {

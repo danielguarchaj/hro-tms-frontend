@@ -123,14 +123,18 @@ export default turnsSlice.reducer;
 
 export const createTurn = createAsyncThunk(
   "turns/createTurn",
-  async (payload) => {
+  async ({ payload, token }) => {
     try {
       const {
         data: {
           data: { turn: newTurn },
         },
         status,
-      } = await axios.post(turns.createTurn, payload);
+      } = await axios.post(turns.createTurn, payload, {
+        headers: {
+          Authorization: token,
+        },
+      });
       return { newTurn, status };
     } catch (error) {
       return {
@@ -140,9 +144,13 @@ export const createTurn = createAsyncThunk(
   }
 );
 
-export const getTurns = createAsyncThunk("turns/getTurns", async () => {
+export const getTurns = createAsyncThunk("turns/getTurns", async (token) => {
   try {
-    const response = await axios.get(turns.getTurns);
+    const response = await axios.get(turns.getTurns, {
+      headers: {
+        Authorization: token,
+      },
+    });
     if (JSON.stringify(response.data) === "{}" || !response.data) {
       return {
         status: 400,
@@ -158,9 +166,13 @@ export const getTurns = createAsyncThunk("turns/getTurns", async () => {
 
 export const updateTurnStatus = createAsyncThunk(
   "turns/updateTurnStatus",
-  async (payload) => {
+  async ({ payload, token }) => {
     try {
-      const response = await axios.put(turns.updateTurnStatus, payload);
+      const response = await axios.put(turns.updateTurnStatus, payload, {
+        headers: {
+          Authorization: token,
+        },
+      });
       return { updatedTurn: response.data, status: response.status };
     } catch (error) {
       return {

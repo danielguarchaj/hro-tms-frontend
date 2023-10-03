@@ -190,10 +190,10 @@ const QueuePublic = () => {
             </ImageListItem>
           </Grid>
           <Grid item xs={6} textAlign={"right"}>
-            <Typography variant="h2">
+            <Typography variant="h3">
               <strong>Tiempo de espera promedio por turno</strong>
             </Typography>
-            <Typography variant="h2">
+            <Typography variant="h3">
               <strong>
                 {(Number(avgWaitingTime) / (1000 * 60)).toFixed()} minutos
               </strong>

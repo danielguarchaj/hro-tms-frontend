@@ -76,10 +76,10 @@ const SearchPatientsResults = () => {
   const dispatch = useDispatch();
   const { fetchingPatientsStatus, searchResult, searchResultStatus } =
     useSelector((state) => state.patients);
-  const { user } = useSelector((state) => state.auth);
+  const { user, token } = useSelector((state) => state.auth);
 
-  const areaName = user?.area?.name;
-  const areaId = user?.area.id;
+  const areaName = user?.area?.name || "";
+  const areaId = user?.area?.id || null;
 
   if (
     searchResultStatus === HTTP_STATUS_CODE_CONTENT_TOO_LARGE &&
@@ -127,7 +127,9 @@ const SearchPatientsResults = () => {
         `Crear cita para paciente ${noHistoriaClinica} - ${nombres} - ${apellidos}`
       )
     ) {
-      dispatch(createTurn({ ...patient, areaName, areaId }));
+      dispatch(
+        createTurn({ payload: { ...patient, areaName, areaId }, token })
+      );
       dispatch(setPatientDialogOpen(false));
     }
   };

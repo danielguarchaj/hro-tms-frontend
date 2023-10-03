@@ -33,6 +33,8 @@ const SearchPatientForm = () => {
     fetchingPatientsStatus,
   } = useSelector((state) => state.patients);
 
+  const { token } = useSelector((state) => state.auth);
+
   const handleChangeRadio = (event) => {
     setRadioValue(event.target.value);
   };
@@ -52,8 +54,11 @@ const SearchPatientForm = () => {
     if (validClinicalHistory && radioValue === "clinicalHistory") {
       dispatch(
         getPatients({
-          searchBy: radioValue,
-          clinicalHistory,
+          payload: {
+            searchBy: radioValue,
+            clinicalHistory,
+          },
+          token,
         })
       );
       return;
@@ -61,14 +66,17 @@ const SearchPatientForm = () => {
     if (validNamesParams && radioValue === "names") {
       dispatch(
         getPatients({
-          searchBy: radioValue,
-          queryParams: {
-            PrimerNombre: firstName,
-            PrimerApellido: firstLastname,
-            SegundoNombre: secondName,
-            SegundoApellido: secondLastname,
-            TercerApellido: thirdLastname,
+          payload: {
+            searchBy: radioValue,
+            queryParams: {
+              PrimerNombre: firstName,
+              PrimerApellido: firstLastname,
+              SegundoNombre: secondName,
+              SegundoApellido: secondLastname,
+              TercerApellido: thirdLastname,
+            },
           },
+          token,
         })
       );
       return;

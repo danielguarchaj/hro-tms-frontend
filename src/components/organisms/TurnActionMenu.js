@@ -7,13 +7,14 @@ import {
   PersonOff,
 } from "@mui/icons-material";
 import { updateTurnStatus } from "@redux/reducers/turns";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Speech from "@molecules/Speech";
 import { StyledTableCell, StyledTableRow } from "@utils/styles";
 import { TURN_STATUS } from "@utils/constants";
 
 export default function TurnActionMenu({ turn, index }) {
   const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.auth);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -29,7 +30,9 @@ export default function TurnActionMenu({ turn, index }) {
         TURN_STATUS.cancelled,
       ].includes(newStatus)
     ) {
-      dispatch(updateTurnStatus({ id: turn._id, newStatus }));
+      dispatch(
+        updateTurnStatus({ payload: { id: turn._id, newStatus }, token })
+      );
     }
   };
   return (

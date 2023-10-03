@@ -9,7 +9,6 @@ export const apiGatewayURL = "http://localhost:3002/";
 export const ENDPOINTS = {
   auth: {
     getAuthenticationToken: `${apiGatewayURL}authentication/get-access-token/`,
-    getAreas: `${apiGatewayURL}authentication/areas`,
   },
   patients: {
     searchPatient: `${apiGatewayURL}patients/`,

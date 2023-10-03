@@ -21,7 +21,6 @@ import {
   setSnackbarFailedTurnUpdateShow,
   setSnackbarSuccessTurnUpdateShow,
 } from "@redux/reducers/turns";
-import { getAreas } from "@redux/reducers/auth";
 import { APP_URLS } from "@routes";
 import { TURN_STATUS } from "@utils/constants";
 import { sortByProperty as sortArray } from "@utils/helpers";
@@ -51,10 +50,11 @@ const buildTableHeader = () => {
 const TurnsQueue = () => {
   const dispatch = useDispatch();
 
+  const { token } = useSelector((state) => state.auth);
+
   useEffect(() => {
-    dispatch(getTurns());
-    dispatch(getAreas());
-  }, [dispatch]);
+    dispatch(getTurns(token));
+  }, [dispatch, token]);
 
   const {
     fetchingTurnsStatus,
