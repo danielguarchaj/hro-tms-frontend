@@ -4,6 +4,9 @@ import { TURN_STATUS } from "@utils/constants";
 const initialState = {
   currentIndex: 0,
   filterParameter: TURN_STATUS.onQueue,
+  fullScreenDialogOpen: false,
+  fullScreenDialogOpenAt: "",
+  appointmentDialogFormOpen: true,
 };
 
 export const adminSlice = createSlice({
@@ -16,8 +19,16 @@ export const adminSlice = createSlice({
     setFilterParameter: (state, { payload }) => {
       state.filterParameter = payload;
     },
+    setFullScreenDialogOpen: (state, { payload: { open, location } }) => {
+      state.fullScreenDialogOpen = open;
+      state.fullScreenDialogOpenAt = location;
+    },
+    setAppointmentDialogFormOpen: (state, { payload }) => {
+      state.appointmentDialogFormOpen = payload;
+    },
   },
 });
 
-export const { setIndex, setFilterParameter } = adminSlice.actions;
+export const { setIndex, setFilterParameter, setFullScreenDialogOpen, setAppointmentDialogFormOpen } =
+  adminSlice.actions;
 export default adminSlice.reducer;

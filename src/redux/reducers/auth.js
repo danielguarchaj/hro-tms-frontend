@@ -7,7 +7,7 @@ import { ENDPOINTS } from "@routes";
 const { auth } = ENDPOINTS;
 
 const initialState = {
-  token: "",
+  token: "123",
   tokenStatus: fetchingResourceStatuses,
   sessionExpired: false,
   username: "",

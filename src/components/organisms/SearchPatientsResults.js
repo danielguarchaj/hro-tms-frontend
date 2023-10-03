@@ -1,9 +1,12 @@
 import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
 import { Typography, Alert } from "@mui/material";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CircularProgress from "@mui/material/CircularProgress";
+
+import AppointmentDialogForm from "./AppointmentDialogForm";
 
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
@@ -15,7 +18,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 import { createTurn } from "@redux/reducers/turns";
-import { setPatientDialogOpen } from "@redux/reducers/patients";
+import { setFullScreenDialogOpen, setAppointmentDialogFormOpen } from "@redux/reducers/admin";
 
 import TableSkeletonLoader from "@molecules/TableSkeletonLoader";
 
@@ -73,10 +76,12 @@ const buildTableHeader = () => {
 };
 
 const SearchPatientsResults = () => {
+  const [selectedPatient, setSelectePatient] = useState(null);
   const dispatch = useDispatch();
   const { fetchingPatientsStatus, searchResult, searchResultStatus } =
     useSelector((state) => state.patients);
   const { user } = useSelector((state) => state.auth);
+  const { fullScreenDialogOpenAt } = useSelector((state) => state.admin);
 
   const areaName = user?.area?.name;
   const areaId = user?.area.id;
@@ -120,19 +125,31 @@ const SearchPatientsResults = () => {
     );
   }
 
-  const handleClickPatient = (patient) => {
+  const handleCreateTurn = (patient) => {
     const { noHistoriaClinica, nombres, apellidos } = patient;
     if (
       window.confirm(
-        `Crear cita para paciente ${noHistoriaClinica} - ${nombres} - ${apellidos}`
+        `Crear turno para paciente ${noHistoriaClinica} - ${nombres} - ${apellidos}`
       )
     ) {
       dispatch(createTurn({ ...patient, areaName, areaId }));
-      dispatch(setPatientDialogOpen(false));
+      dispatch(setFullScreenDialogOpen({ open: false, location: "" }));
     }
   };
 
+  const handleCreateAppointment = (patient) => {
+    setSelectePatient(patient);
+    dispatch(setAppointmentDialogFormOpen(true))
+  };
+
   const totalPatientsFound = searchResult.length;
+
+  const clickHandlerMap = {
+    queue: handleCreateTurn,
+    appointments: handleCreateAppointment,
+  };
+
+  const clickHandler = clickHandlerMap[fullScreenDialogOpenAt];
 
   const buildTableContent = () => {
     return searchResult.map((patient) => {
@@ -141,16 +158,17 @@ const SearchPatientsResults = () => {
       );
       const cleanedNames = cleanAndCapitalizeParagraph(patient.nombres);
       const cleanedLastnames = cleanAndCapitalizeParagraph(patient.apellidos);
+      const patientData = {
+        ...patient,
+        noHistoriaClinica: cleanedClinicHistory,
+        nombres: cleanedNames,
+        apellidos: cleanedLastnames,
+      };
       return (
         <StyledTableRow
           key={`${patient.codigo}-StyledTableRow-Key`}
           onClick={() =>
-            handleClickPatient({
-              ...patient,
-              noHistoriaClinica: cleanedClinicHistory,
-              nombres: cleanedNames,
-              apellidos: cleanedLastnames,
-            })
+            clickHandler(patientData)
           }
           sx={{
             "&:hover": {
@@ -181,6 +199,7 @@ const SearchPatientsResults = () => {
   };
 
   return (
+    <>
     <Card variant="outlined">
       <CardContent sx={{ padding: "0!important" }}>
         <Box
@@ -222,6 +241,8 @@ const SearchPatientsResults = () => {
         </Box>
       </CardContent>
     </Card>
+    <AppointmentDialogForm patient={selectedPatient} />
+    </>
   );
 };
 

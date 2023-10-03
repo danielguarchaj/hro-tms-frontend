@@ -17,7 +17,6 @@ const initialState = {
   },
   searchResult: [],
   searchResultStatus: null,
-  searchPatientDialogOpen: false,
 };
 
 export const patientsSlice = createSlice({
@@ -26,9 +25,6 @@ export const patientsSlice = createSlice({
   reducers: {
     updateInput: (state, { payload: { field, value } }) => {
       state.searchForm[field] = value;
-    },
-    setPatientDialogOpen: (state, { payload }) => {
-      state.searchPatientDialogOpen = payload;
     },
   },
   extraReducers(builder) {
@@ -66,7 +62,7 @@ export const patientsSlice = createSlice({
   },
 });
 
-export const { updateInput, setPatientDialogOpen } = patientsSlice.actions;
+export const { updateInput } = patientsSlice.actions;
 export default patientsSlice.reducer;
 
 export const getPatients = createAsyncThunk(
