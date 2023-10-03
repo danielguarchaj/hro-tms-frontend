@@ -8,8 +8,9 @@ import { Box, Fab, Typography, Zoom } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 import TurnsManagement from "./TurnsManagement";
+import AppointmentsManagement from "./AppointmentsManagement";
 import { setIndex } from "@redux/reducers/admin";
-import { setPatientDialogOpen } from "@redux/reducers/patients";
+import { setFullScreenDialogOpen } from "@redux/reducers/admin";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -39,7 +40,9 @@ const Admin = () => {
     dispatch(setIndex({ index }));
   };
 
-  const handleOpenSearchPatient = () => dispatch(setPatientDialogOpen(true));
+  const handleOpenFullScreenDialogQueue = () => dispatch(setFullScreenDialogOpen({ open: true, location: "queue" }));
+  const hanleOpenFullScreenDialogAppointments = () =>
+    dispatch(setFullScreenDialogOpen({ open: true, location: "appointments" }));
 
   const transitionDuration = {
     enter: theme.transitions.duration.enteringScreen,
@@ -58,13 +61,14 @@ const Admin = () => {
       sx: fabStyle,
       icon: <AddToQueue />,
       label: "Add",
-      onClick: handleOpenSearchPatient,
+      onClick: handleOpenFullScreenDialogQueue,
     },
     {
       color: "secondary",
       sx: fabStyle,
       icon: <EventAvailable />,
       label: "Edit",
+      onClick: hanleOpenFullScreenDialogAppointments,
     },
   ];
 
@@ -79,7 +83,7 @@ const Admin = () => {
           <TurnsManagement />
         </TabPanel>
         <TabPanel value={currentIndex} index={1} dir={theme.direction}>
-          Citas
+          <AppointmentsManagement />
         </TabPanel>
         <TabPanel value={currentIndex} index={2} dir={theme.direction}>
           Reportes
