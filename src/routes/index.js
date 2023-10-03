@@ -18,4 +18,10 @@ export const ENDPOINTS = {
     updateTurnStatus: `${apiGatewayURL}turns/`,
     getTurns: `${apiGatewayURL}turns/today`,
   },
+  appointments: {
+    createAppointment: `${apiGatewayURL}appointments/`,
+    updateAppointment: `${apiGatewayURL}appointments/`,
+    getAppointments: `${apiGatewayURL}appointments/`,
+    deleteAppointment: `${apiGatewayURL}appointments/`,
+  }
 };

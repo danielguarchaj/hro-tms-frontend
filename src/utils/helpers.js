@@ -85,6 +85,21 @@ export const getEstimatedTimeToBeAttended = (order, averageWaitingTime) => {
   const nowTime = new Date().getTime();
   const timeToAdd = Number(averageWaitingTime) * order;
   const estimatedDateTime = new Date(nowTime + timeToAdd);
-  console.log(`${estimatedDateTime.getHours()}:${estimatedDateTime.getMinutes()}`)
-  return `${estimatedDateTime.getHours()}:${estimatedDateTime.getMinutes()}`
-}
+  return `${estimatedDateTime.getHours()}:${estimatedDateTime.getMinutes()}`;
+};
+
+export const buildDateFromPicker = (dateObject) => {
+  const { $d } = dateObject;
+  if (isNaN($d.getDate())) {
+    return "";
+  }
+  return new Date($d.getTime()).toISOString();
+};
+
+export const buildTimeFromPicker = (dateObject) => {
+  const { $d } = dateObject;
+  if (isNaN($d.getDate())) {
+    return "";
+  }
+  return `${$d.getHours()}:${$d.getMinutes()}`;
+};
