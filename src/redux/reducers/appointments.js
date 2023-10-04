@@ -2,7 +2,7 @@ import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchingResourceStatuses } from "@utils/constants";
 import { ENDPOINTS } from "@routes";
-import { sortByProperty } from "../../utils/helpers";
+import { cleanStringForEvent, sortByProperty } from "@utils/helpers";
 
 const { appointments } = ENDPOINTS;
 
@@ -31,7 +31,7 @@ export const appointmentsSlice = createSlice({
   initialState,
   reducers: {
     updateInput: (state, { payload: { field, value } }) => {
-      state.appointmentEventForm[field] = value;
+      state.appointmentEventForm[field] = cleanStringForEvent(value);
     },
     updateQueryInput: (state, { payload: { field, value } }) => {
       state.appointmentsQueryForm[field] = value;

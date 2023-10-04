@@ -18,7 +18,7 @@ import { Tab, Tabs } from "@mui/material";
 
 import Logo from "../../assets/images/logo HRO sin fondo..png";
 
-const pages = ["Turnos", "Citas", "Reportes"];
+const pages = ["Turnos", "Citas", "Reporte de turnos"];
 
 function a11yProps(index) {
   return {
