@@ -13,7 +13,7 @@ import {
   DatePicker,
   TimeField,
   LocalizationProvider,
-} from "@mui/x-date-pickers/DatePicker";
+} from "@mui/x-date-pickers";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setAppointmentDialogFormOpen,

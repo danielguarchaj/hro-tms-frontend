@@ -1,6 +1,9 @@
 import jwt_decode from "jwt-decode";
 
-export const cleanClinicHistory = (clinicHistory) => {
+export const cleanClinicHistory = (clinicHistory = "") => {
+  if (!clinicHistory) {
+    return "";
+  }
   return clinicHistory.trim();
 };
 
@@ -102,4 +105,12 @@ export const buildTimeFromPicker = (dateObject) => {
     return "";
   }
   return `${$d.getHours()}:${$d.getMinutes()}`;
+};
+
+export const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-based
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 };

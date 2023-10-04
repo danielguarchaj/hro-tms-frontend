@@ -2,14 +2,9 @@ import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchingResourceStatuses } from "@utils/constants";
 import { ENDPOINTS } from "@routes";
+import { sortByProperty } from "../../utils/helpers";
 
 const { appointments } = ENDPOINTS;
-
-// Subject,           Start Date,     Start Time,   End Date,      End Time,     All Day Event,    Description,    Location
-// Nombres paciente (se muestra en form con input disabled y se arma automaticamente)
-                    //  date            time          date           time          false             Notas           Area (Se muestra igual que subject)
-
-// Event 1,2023-10-10,09:00 AM,2023-10-10,10:30 AM,False,Description of event 1,Location 1
 
 const initialState = {
   appointmentOperationStatus: fetchingResourceStatuses,
@@ -19,8 +14,16 @@ const initialState = {
     endTime: "",
     description: "",
   },
+  appointmentsQueryForm: {
+    fromDate: "",
+    toDate: "",
+  },
   snackbarFailedAppointmentShow: false,
   snackbarSuccessAppointmentShow: false,
+  snackbarFailedGetAppointmentShow: false,
+  snackbarSuccessGetAppointmentShow: false,
+  appointmentFetchingStatus: fetchingResourceStatuses,
+  appointments: [],
 };
 
 export const appointmentsSlice = createSlice({
@@ -28,8 +31,10 @@ export const appointmentsSlice = createSlice({
   initialState,
   reducers: {
     updateInput: (state, { payload: { field, value } }) => {
-      console.log(field, value);
       state.appointmentEventForm[field] = value;
+    },
+    updateQueryInput: (state, { payload: { field, value } }) => {
+      state.appointmentsQueryForm[field] = value;
     },
     setSnackbarFailedAppointmentShow: (state, { payload }) => {
       state.snackbarFailedAppointmentShow = payload;
@@ -46,9 +51,10 @@ export const appointmentsSlice = createSlice({
       .addCase(
         createAppointment.fulfilled,
         (state, { payload: { status } }) => {
-          if (status === 200) {
+          if (status === 201) {
             state.appointmentOperationStatus = "succeeded";
             state.snackbarSuccessAppointmentShow = true;
+            state.appointmentEventForm = initialState.appointmentEventForm;
             return;
           }
           state.appointmentOperationStatus = "failed";
@@ -57,11 +63,37 @@ export const appointmentsSlice = createSlice({
       )
       .addCase(createAppointment.rejected, (state) => {
         state.appointmentOperationStatus = "failed";
+      })
+      .addCase(getAppointments.pending, (state) => {
+        state.appointmentFetchingStatus = "loading";
+      })
+      .addCase(
+        getAppointments.fulfilled,
+        (state, { payload: { appointments, status } }) => {
+          if (
+            (status === 200 && appointments?.length !== undefined) ||
+            appointments?.length >= 0
+          ) {
+            state.appointmentFetchingStatus = "succeeded";
+            const sortedAppointments = sortByProperty(appointments, "date");
+            state.appointments = sortedAppointments;
+            return;
+          }
+          state.appointmentFetchingStatus = "failed";
+        }
+      )
+      .addCase(getAppointments.rejected, (state) => {
+        state.appointmentFetchingStatus = "failed";
       });
   },
 });
 
-export const { updateInput } = appointmentsSlice.actions;
+export const {
+  updateInput,
+  updateQueryInput,
+  setSnackbarFailedAppointmentShow,
+  setSnackbarSuccessAppointmentShow,
+} = appointmentsSlice.actions;
 export default appointmentsSlice.reducer;
 
 export const createAppointment = createAsyncThunk(
@@ -88,6 +120,32 @@ export const createAppointment = createAsyncThunk(
     } catch (error) {
       return {
         status: error.response.status || 500,
+      };
+    }
+  }
+);
+
+export const getAppointments = createAsyncThunk(
+  "appointments/getAppointments",
+  async ({ token, queryParams }) => {
+    try {
+      const response = await axios.get(
+        `${appointments.getAppointments}?${queryParams}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      if (JSON.stringify(response.data) === "{}" || !response.data) {
+        return {
+          status: 400,
+        };
+      }
+      return { appointments: response.data, status: response.status };
+    } catch (error) {
+      return {
+        status: error?.response?.status || 500,
       };
     }
   }

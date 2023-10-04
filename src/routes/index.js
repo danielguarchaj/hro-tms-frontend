@@ -21,7 +21,8 @@ export const ENDPOINTS = {
   appointments: {
     createAppointment: `${apiGatewayURL}appointments/`,
     updateAppointment: `${apiGatewayURL}appointments/`,
-    getAppointments: `${apiGatewayURL}appointments/`,
     deleteAppointment: `${apiGatewayURL}appointments/`,
+    getAppointments: `${apiGatewayURL}appointments/`,
+    getAppointmentsCsv: `${apiGatewayURL}appointments/csv/`,
   }
 };

@@ -1,10 +1,10 @@
-import TurnsQueue from "@organisms/TurnsQueue";
 import SearchPatientsTemplate from "@templates/SearchPatientsTemplate";
+import AppointmentsQuery from "@organisms/AppointmentsQuery";
 
 const AppointmentsManagement = () => {
   return (
     <>
-      CITAS
+      <AppointmentsQuery />
       <SearchPatientsTemplate />
     </>
   );
