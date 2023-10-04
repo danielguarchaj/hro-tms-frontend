@@ -150,3 +150,29 @@ export const getAppointments = createAsyncThunk(
     }
   }
 );
+
+export const getAppointmentsCsv = createAsyncThunk(
+  "appointments/getAppointmentsCsv",
+  async ({ token, queryParams, targetCalendar }) => {
+    try {
+      const response = await axios.get(
+        `${appointments.getAppointmentsCsv}?${queryParams}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `appointments-${targetCalendar}.csv`;
+      a.click();
+    } catch (error) {
+      return {
+        status: error?.response?.status || 500,
+      };
+    }
+  }
+);

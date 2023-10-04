@@ -24,7 +24,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { buildDateFromPicker, formatDate } from "@utils/helpers";
 import { ScreenSearchDesktop, FileDownload } from "@mui/icons-material";
 import { StyledTableCell, StyledTableRow } from "@utils/styles";
-import { getAppointments } from "@redux/reducers/appointments";
+import {
+  getAppointments,
+  getAppointmentsCsv,
+} from "@redux/reducers/appointments";
 import LoadingButton from "@mui/lab/LoadingButton";
 
 const buildTableHeader = () => {
@@ -59,23 +62,17 @@ const AppointmentsQuery = () => {
     dispatch(getAppointments({ token, queryParams }));
   };
 
+  const handleGetAppointmentsCsv = (targetCalendar = "outlook") => {
+    const queryParams = `fromDate=${fromDate}&toDate=${toDate}&targetCalendar=${targetCalendar}`;
+    dispatch(getAppointmentsCsv({ token, queryParams, targetCalendar }));
+  };
+
   const loadingAppointments = appointmentFetchingStatus === "loading";
 
   const buildTableContent = () => {
     return appointments.map((aptmnt) => {
       return (
-        <StyledTableRow
-          key={`${aptmnt._id}-StyledTableRow-Key`}
-          // onClick={() =>
-          //   clickHandler(patientData)
-          // }
-          // sx={{
-          //   "&:hover": {
-          //     backgroundColor: "lightblue",
-          //     cursor: "pointer",
-          //   },
-          // }}
-        >
+        <StyledTableRow key={`${aptmnt._id}-StyledTableRow-Key`}>
           <StyledTableCell component="th" scope="row">
             {aptmnt.subject}
           </StyledTableCell>
@@ -90,6 +87,8 @@ const AppointmentsQuery = () => {
       );
     });
   };
+
+  const disableButtons = !fromDate || !toDate;
 
   return (
     <Card variant="outlined" sx={{ marginTop: 0.3 }}>
@@ -184,15 +183,27 @@ const AppointmentsQuery = () => {
                 variant="outlined"
                 startIcon={<ScreenSearchDesktop />}
                 loading={loadingAppointments}
+                disabled={disableButtons}
               >
                 Ver en pantalla
               </LoadingButton>
               <LoadingButton
+                onClick={() => handleGetAppointmentsCsv("google")}
                 loading={loadingAppointments}
                 variant="contained"
                 endIcon={<FileDownload />}
+                disabled={disableButtons}
               >
-                Descargar csv
+                Descargar csv Google
+              </LoadingButton>
+              <LoadingButton
+                onClick={() => handleGetAppointmentsCsv("outlook")}
+                loading={loadingAppointments}
+                variant="contained"
+                endIcon={<FileDownload />}
+                disabled={disableButtons}
+              >
+                Descargar csv Outlook
               </LoadingButton>
             </Stack>
           </Box>

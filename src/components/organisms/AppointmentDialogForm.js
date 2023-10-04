@@ -113,10 +113,7 @@ const AppointmentDialogForm = ({ patient = null, appointment = null }) => {
             </DemoContainer>
           </LocalizationProvider>
           <TextField
-            id="outlined-multiline-flexible"
             label="Notas"
-            multiline
-            rows={8}
             fullWidth
             sx={{ marginTop: 3 }}
             value={description}
