@@ -17,6 +17,8 @@ export const ENDPOINTS = {
     createTurn: `${apiGatewayURL}turns/`,
     updateTurnStatus: `${apiGatewayURL}turns/`,
     getTurns: `${apiGatewayURL}turns/today`,
+    getTurnsReport: `${apiGatewayURL}turns/report/`,
+    getTurnsReportCsv: `${apiGatewayURL}turns/report/csv/`,
   },
   appointments: {
     createAppointment: `${apiGatewayURL}appointments/`,

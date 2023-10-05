@@ -108,11 +108,25 @@ export const buildTimeFromPicker = (dateObject) => {
 };
 
 export const formatDate = (dateString) => {
+  if (!dateString) {
+    return "";
+  }
   const date = new Date(dateString);
   const day = date.getDate().toString().padStart(2, "0");
-  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-based
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
+};
+
+export const formatDateTime = (dateString) => {
+  if (!dateString) {
+    return "";
+  }
+  const date = new Date(dateString);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 };
 
 export const cleanStringForEvent = (string) => {

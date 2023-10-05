@@ -18,6 +18,14 @@ const initialState = {
   updateTurnStatus: null,
   snackbarFailedTurnUpdateShow: false,
   snackbarSuccessTurnUpdateShow: false,
+  report: {
+    searchForm: {
+      fromDate: "",
+      toDate: "",
+    },
+    turns: [],
+    fetchingReportStatus: fetchingResourceStatuses,
+  },
 };
 
 export const turnsSlice = createSlice({
@@ -35,6 +43,9 @@ export const turnsSlice = createSlice({
     },
     setSnackbarSuccessTurnUpdateShow: (state, { payload }) => {
       state.snackbarSuccessTurnUpdateShow = payload;
+    },
+    updateInputReportField: (state, { payload: { field, value } }) => {
+      state.report.searchForm[field] = value;
     },
   },
   extraReducers(builder) {
@@ -108,6 +119,28 @@ export const turnsSlice = createSlice({
       .addCase(updateTurnStatus.rejected, (state) => {
         state.snackbarFailedTurnUpdateShow = true;
         state.updatingTurnStatus = "failed";
+      })
+      .addCase(getTurnsReport.pending, (state) => {
+        state.report.fetchingReportStatus = "loading";
+      })
+      .addCase(
+        getTurnsReport.fulfilled,
+        (state, { payload: { turns, status } }) => {
+          if (
+            (status === 200 && turns?.length !== undefined) ||
+            turns?.length >= 0
+          ) {
+            state.report.fetchingReportStatus = "succeeded";
+            // const sortedturns = sortByProperty(turns, "date");
+            // state.turns = sortedturns;
+            state.report.turns = turns;
+            return;
+          }
+          state.report.fetchingReportStatus = "failed";
+        }
+      )
+      .addCase(getTurnsReport.rejected, (state) => {
+        state.report.fetchingReportStatus = "failed";
       });
   },
 });
@@ -117,6 +150,7 @@ export const {
   setSnackbarSuccessTurnShow,
   setSnackbarFailedTurnUpdateShow,
   setSnackbarSuccessTurnUpdateShow,
+  updateInputReportField,
 } = turnsSlice.actions;
 
 export default turnsSlice.reducer;
@@ -177,6 +211,58 @@ export const updateTurnStatus = createAsyncThunk(
     } catch (error) {
       return {
         status: error.response.status,
+      };
+    }
+  }
+);
+
+export const getTurnsReport = createAsyncThunk(
+  "turns/getTurnsReport",
+  async ({ token, queryParams }) => {
+    try {
+      const response = await axios.get(
+        `${turns.getTurnsReport}?${queryParams}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      if (JSON.stringify(response.data) === "{}" || !response.data) {
+        return {
+          status: 400,
+        };
+      }
+      return { turns: response.data, status: response.status };
+    } catch (error) {
+      return {
+        status: error?.response?.status || 500,
+      };
+    }
+  }
+);
+
+export const getTurnsReportCsv = createAsyncThunk(
+  "turns/getTurnsReportCsv",
+  async ({ token, queryParams }) => {
+    try {
+      const response = await axios.get(
+        `${turns.getTurnsReportCsv}?${queryParams}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `reporte-turnos-hro.csv`;
+      a.click();
+    } catch (error) {
+      return {
+        status: error?.response?.status || 500,
       };
     }
   }

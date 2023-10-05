@@ -167,7 +167,7 @@ export const getAppointmentsCsv = createAsyncThunk(
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const a = document.createElement("a");
       a.href = url;
-      a.download = `appointments-${targetCalendar}.csv`;
+      a.download = `citas-hro-${targetCalendar}.csv`;
       a.click();
     } catch (error) {
       return {

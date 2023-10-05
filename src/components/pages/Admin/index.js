@@ -9,6 +9,7 @@ import { useTheme } from "@mui/material/styles";
 
 import TurnsManagement from "./TurnsManagement";
 import AppointmentsManagement from "./AppointmentsManagement";
+import ReportsManagement from "./ReportsManagement";
 import { setIndex } from "@redux/reducers/admin";
 import { setFullScreenDialogOpen } from "@redux/reducers/admin";
 
@@ -86,7 +87,7 @@ const Admin = () => {
           <AppointmentsManagement />
         </TabPanel>
         <TabPanel value={currentIndex} index={2} dir={theme.direction}>
-          Reportes
+          <ReportsManagement />
         </TabPanel>
       </SwipeableViews>
       {fabs.map((fab, index) => (
