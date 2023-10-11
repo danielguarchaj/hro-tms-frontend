@@ -4,7 +4,8 @@ export const APP_URLS = {
   admin: "/",
 };
 
-export const apiGatewayURL = "http://localhost:3002/";
+export const apiGatewayURL =
+  process.env.APIGW_SERVICE_URL || "http://localhost:3002/";
 
 export const ENDPOINTS = {
   auth: {
@@ -26,5 +27,5 @@ export const ENDPOINTS = {
     deleteAppointment: `${apiGatewayURL}appointments/`,
     getAppointments: `${apiGatewayURL}appointments/`,
     getAppointmentsCsv: `${apiGatewayURL}appointments/csv/`,
-  }
+  },
 };
